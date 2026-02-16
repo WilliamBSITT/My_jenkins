@@ -1,8 +1,8 @@
 services:
   jenkins:
     build: .
-    image: whanos-jenkins
-    container_name: jenkins-whanos
+    image: my-jenkins:latest
+    container_name: my_jenkins
     restart: unless-stopped
     environment:
       - ADMIN_PASSWORD=${JENKINS_ADMIN_PASSWORD}
@@ -11,3 +11,26 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - my_jenkins_network
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok-tunnel
+    restart: unless-stopped
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    command:
+      - "http"
+      - "--url=${NGROK_DOMAIN}"
+      - "--oauth=google"
+      - "--oauth-allow-email=${NGROK_ALLOWED_EMAILS}"
+      - "jenkins:8080"
+    depends_on:
+      - jenkins
+    networks:
+      - my_jenkins_network
+
+networks:
+  my_jenkins_network:
+    driver: bridge

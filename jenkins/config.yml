@@ -1,0 +1,56 @@
+security:
+  gitHostKeyVerificationConfiguration:
+    sshHostKeyVerificationStrategy: "acceptFirstConnectionStrategy"
+
+jenkins:
+  systemMessage: "Welcome to my Jenkins instance!\n\nThe goal of this platform is to provide a robust and automated environment for continuous integration and delivery. By centralizing our build processes, we aim to:\n    * Streamline Development: Automate repetitive tasks like testing, building, and deploying.\n    * Ensure Quality: Detect bugs early through automated validation and immediate feedback loops.\n    * Optimize Performance: Maintain a clean, high-performance infrastructure for all our software projects."
+  remotingSecurity:
+    enabled: true
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          name: "Administrator"
+          password: ${ADMIN_PASSWORD}
+        - id : "developer"
+          name: "Developer"
+          password: ${DEVELOPER_PASSWORD}
+  authorizationStrategy:
+    roleBased:
+      roles:
+        global:
+          - name: "admin"
+            permissions:
+              - "Overall/Administer"
+            entries:
+              - user: "admin"
+          
+          # DEVELOPER : Peut se connecter mais ne voit aucun job par défaut
+          - name: "developer_global"
+            permissions:
+              - "Overall/Read"
+            entries:
+              - user: "developer"
+
+        items:
+          # DEVELOPER : Voit seulement ce qui est dans le dossier "Projects"
+          - name: "projects_only"
+            pattern: "^Projects($|/.*)"
+            permissions:
+              - "Job/Read"
+              - "Job/Build"
+              - "Job/Workspace"
+            entries:
+              - user: "developer"
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: true
+
+appearance:
+  themeManager:
+    disableUserThemes: false
+    theme: "dark"
+
+jobs:
+  - file: /jenkins/job_dsl.groovy

@@ -1,0 +1,28 @@
+# Core Lifecycle & UI
+configuration-as-code
+job-dsl
+script-security
+role-strategy
+theme-manager
+dark-theme
+catppuccin-theme
+
+# Pipeline & Build tools
+workflow-aggregator
+workflow-job
+structs
+ws-cleanup
+parameterized-trigger
+credentials-binding
+uno-choice
+
+# Git & GitHub
+git
+git-client
+github
+
+# Docker Integration
+docker-workflow
+docker-java-api
+docker-commons
+docker-plugin
