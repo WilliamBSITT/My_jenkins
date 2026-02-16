@@ -1,0 +1,13 @@
+services:
+  jenkins:
+    build: .
+    image: whanos-jenkins
+    container_name: jenkins-whanos
+    restart: unless-stopped
+    environment:
+      - ADMIN_PASSWORD=${JENKINS_ADMIN_PASSWORD}
+      - DEVELOPER_PASSWORD=${JENKINS_DEVELOPER_PASSWORD}
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
