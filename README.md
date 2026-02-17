@@ -15,7 +15,6 @@
  - `JENKINS_DEVELOPER_PASSWORD` - developer password
  - `NGROK_AUTHTOKEN` - ngrok authentication token
  - `NGROK_DOMAIN` - ngrok domain (optional)
- - `NGROK_ALLOWED_EMAILS` - authorized email (optional)
 
  Run:
 

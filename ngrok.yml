@@ -1,0 +1,23 @@
+version: "2"
+tunnels:
+  jenkins:
+    proto: http
+    addr: jenkins:8080
+    traffic_policy:
+      on_http_request:
+        # Bypass GitHub for webhooks
+        - expressions:
+            - "req.headers['user-agent'].exists(ua, ua.contains('GitHub-Hookshot'))"
+          actions:
+            - type: add-headers
+              config:
+                headers:
+                  ngrok-skip-browser-warning: "true"
+
+        # 2. OAuth Google (to block all bot)
+        - expressions:
+            - "!req.headers['user-agent'].exists(ua, ua.contains('GitHub-Hookshot'))"
+          actions:
+            - type: oauth
+              config:
+                provider: google

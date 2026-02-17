@@ -18,18 +18,32 @@ services:
     image: ngrok/ngrok:latest
     container_name: ngrok-tunnel
     restart: unless-stopped
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml:ro # Montage crucial pour que ngrok trouve le fichier
     environment:
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+      - ALLOWED_EMAILS=${NGROK_ALLOWED_EMAILS}
     command:
-      - "http"
-      - "--url=${NGROK_DOMAIN}"
-      - "--oauth=google"
-      - "--oauth-allow-email=${NGROK_ALLOWED_EMAILS}"
-      - "jenkins:8080"
+      - "start"
+      - "jenkins"
+      - "--config=/etc/ngrok.yml"
     depends_on:
       - jenkins
     networks:
       - my_jenkins_network
+
+    #     ngrok:
+    # image: ngrok/ngrok:latest
+    # environment:
+    #   - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    #   - ALLOWED_EMAILS=${NGROK_ALLOWED_EMAILS}
+    # volumes:
+    #   - ./ngrok.yml:/etc/ngrok.yml:ro
+    # command:
+    #   - "http"
+    #   - "--url=unmundane-nonarchitectural-vina.ngrok-free.dev"
+    #   - "--config=/etc/ngrok.yml"
+    #   - "jenkins:8080"
 
 networks:
   my_jenkins_network:
