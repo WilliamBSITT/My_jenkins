@@ -1,0 +1,38 @@
+stage('Docker Build') {
+    echo 'Construction de l image (Multi-stage)...'
+    sh 'docker build -t mon-app:latest .'
+}
+
+stage('Test & Extraction') {
+    script {
+        if (fileExists('test.sh')) {
+            try {
+                sh '''
+                    docker rm -f test-container || true
+                    docker run --name test-container mon-app:latest ./test.sh > artifact.log 2>&1 || true
+                    docker cp test-container:/app/test-results.xml ./test-results.xml
+                '''
+            } finally {
+                sh '''docker rm -f test-container || true'''
+            }
+        } else {
+            echo "--- test.sh absent : Initialisation du graph ---"
+            sh '''
+                echo '<?xml version="1.0" encoding="UTF-8"?>
+                <testsuites>
+                  <testsuite name="Init" tests="1">
+                    <testcase name="Initial_Setup" classname="Setup">
+                        <failure message="No tests found yet">Waiting for test.sh</failure>
+                    </testcase>
+                  </testsuite>
+                </testsuites>' > test-results.xml
+            '''
+        }
+    }
+    junit 'test-results.xml'
+}
+
+stage('Archive') {
+    echo 'Archivage des résultats...'
+    archiveArtifacts artifacts: 'artifact.log, hello, test-results.xml', allowEmptyArchive: true
+}
